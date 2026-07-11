@@ -1,10 +1,17 @@
 package com.github.BMP29.oauth2_auth_provider.dto;
 
-import lombok.Data;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
-@Data
-public class UserDto {
-    private String username;
-    private String password;
-    private String email;
-}
+import java.time.LocalDateTime;
+
+public record UserDto (
+        @NotBlank
+        String username,
+        @NotBlank
+        String email,
+        @NotNull
+        boolean enabled,
+        @NotNull
+        LocalDateTime createdAt
+) { }
