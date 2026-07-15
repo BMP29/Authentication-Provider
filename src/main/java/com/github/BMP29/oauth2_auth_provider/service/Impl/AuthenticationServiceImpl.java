@@ -1,15 +1,12 @@
 package com.github.BMP29.oauth2_auth_provider.service.Impl;
 
 import com.github.BMP29.oauth2_auth_provider.dto.SignUpDto;
+import com.github.BMP29.oauth2_auth_provider.dto.VerifyUserDto;
 import com.github.BMP29.oauth2_auth_provider.entity.User;
 import com.github.BMP29.oauth2_auth_provider.repository.UserRepository;
 import com.github.BMP29.oauth2_auth_provider.service.IAuthenticationService;
 import lombok.AllArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -37,5 +34,25 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
         user.setVerificationCode(UUID.randomUUID().toString());
 
         return userRepository.save(user);
+    }
+
+    @Override
+    public void verify(VerifyUserDto verifyUserDto) {
+        User user = userRepository.findByEmail(verifyUserDto.email())
+                .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado."));
+
+        if(user.getVerificationCodeExpiresAt().isBefore(LocalDateTime.now())) {
+            throw new RuntimeException("Código de verificação expirou.");
+        }
+
+        if(!user.getVerificationCode().equals(verifyUserDto.verificationCode())) {
+            throw new RuntimeException("Código de verificação inválido.");
+        }
+
+        user.setEnabled(true);
+        user.setLastUpdated(LocalDateTime.now());
+        user.setVerificationCode(null);
+        user.setVerificationCodeExpiresAt(null);
+        userRepository.save(user);
     }
 }
