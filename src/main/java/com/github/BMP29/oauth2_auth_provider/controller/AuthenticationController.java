@@ -34,4 +34,26 @@ public class AuthenticationController {
 
         return new ResponseEntity<>(stdResponse, HttpStatus.CREATED);
     }
+
+    @PostMapping("/verify")
+    public ResponseEntity<StandardResponseDto<String>> verify(@RequestBody VerifyUserDto verifyUserDto) {
+
+        try {
+            authService.verify(verifyUserDto);
+
+            StandardResponseDto<String> stdResponse =
+                    new StandardResponseDto<>(
+                            true,
+                            "Conta verificada com sucesso.",
+                            null
+                    );
+
+            return new ResponseEntity<>(stdResponse, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(
+                    new StandardResponseDto<>(false, e.getMessage(), null),
+                    HttpStatus.BAD_REQUEST
+            );
+        }
+    }
 }
