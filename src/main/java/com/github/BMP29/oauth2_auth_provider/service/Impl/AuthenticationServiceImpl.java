@@ -13,6 +13,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -26,6 +27,20 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
 
     @Override
     public User signup(SignUpDto signUpInput) {
+        Optional<User> optionalUser =
+                userRepository.findByUsername(signUpInput.username());
+
+        if(optionalUser.isPresent()) {
+            throw new RuntimeException("Usuário já existe");
+        }
+
+        Optional<User> optionalEmail =
+                userRepository.findByEmail(signUpInput.email());
+
+        if (optionalEmail.isPresent()) {
+            throw new RuntimeException("Email já está sendo usado");
+        }
+
         User user = new User();
         user.setUsername(signUpInput.username());
         user.setEmail(signUpInput.email());
