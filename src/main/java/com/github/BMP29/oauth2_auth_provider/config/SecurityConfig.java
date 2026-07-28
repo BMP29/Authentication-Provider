@@ -193,10 +193,11 @@ public class SecurityConfig {
     @Bean
     OAuth2TokenGenerator<?> tokenGenerator(
             JWKSource<SecurityContext> jwkSource,
-            OAuth2TokenCustomizer<JwtEncodingContext> customizer) {
+            OAuth2TokenCustomizer<JwtEncodingContext> customizer,
+            JwtEncoder jwtEncoder) {
 
         JwtGenerator jwtGenerator =
-                new JwtGenerator(new NimbusJwtEncoder(jwkSource));
+                new JwtGenerator(jwtEncoder);
 
         jwtGenerator.setJwtCustomizer(customizer);
 
