@@ -87,10 +87,6 @@ public class SecurityConfig {
                     authorizationServer
                             .oidc(Customizer.withDefaults());
                 })
-                .authorizeHttpRequests((authorize) ->
-                        authorize
-                                .anyRequest().authenticated()
-                )
                 .exceptionHandling((exceptions) -> exceptions
                         .defaultAuthenticationEntryPointFor(
                                 new LoginUrlAuthenticationEntryPoint("/login"),
